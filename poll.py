@@ -82,6 +82,7 @@ def updateClass(datetime,line):
 print("Entering polling loop...")
 pauseTime = minPause
 while True:
+    sys.stdout.flush()
     updateFlag = False
     changes = 0
     now = datetime.datetime.now()
