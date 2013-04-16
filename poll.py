@@ -87,25 +87,30 @@ while True:
     changes = 0
     now = datetime.datetime.now()
     print(now)
-    f = urllib.urlopen(CourseUrl)
-    #f = open("reg.html")
-    html = f.read()
-
-    soup = BeautifulSoup(html)
-
-    #Go over every table row
-    tr_list = soup.find_all('tr')
-    for tr in tr_list:
-        columns = tr.find_all('td')
-        #Construct list of columns for this row
-        colText = [entry.get_text(" ",strip=True).replace("\n","") for entry in columns]
-	change  = updateClass(now,colText)
-	if (change): #Count changes
-            changes += 1
-        updateFlag |= change #Has there been any change at all this loop?
-    if (updateFlag): #Reset update period 
-        pauseTime = minPause
-    else: #No changes.  Pause for longer time (or max time, whichever is smaller)
-        pauseTime = min(maxPause, pauseTime * timeMultiplier)
-    print("Pausing for {0} seconds after {1} changes".format(pauseTime, changes))
-    time.sleep(pauseTime)
+    try:
+        f =  urllib.urlopen(CourseUrl)
+        #f = open("reg.html")
+        html = f.read()
+    
+        soup = BeautifulSoup(html)
+    
+        #Go over every table row
+        tr_list = soup.find_all('tr')
+        for tr in tr_list:
+            columns = tr.find_all('td')
+            #Construct list of columns for this row
+            colText = [entry.get_text(" ",strip=True).replace("\n","") for entry in columns]
+            change  = updateClass(now,colText)
+            if (change): #Count changes
+                changes += 1
+            updateFlag |= change #Has there been any change at all this loop?
+        if (updateFlag): #Reset update period 
+            pauseTime = minPause
+        else: #No changes.  Pause for longer time (or max time, whichever is smaller)
+            pauseTime = min(maxPause, pauseTime * timeMultiplier)
+        print("Pausing for {0} seconds after {1} changes".format(pauseTime, changes))
+        time.sleep(pauseTime)
+    except:
+	print("{0} - Exception. Sleeping for {1} seconds".format(now, maxPause))
+	time.sleep(maxPause)
+	pass
